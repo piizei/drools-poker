@@ -1,0 +1,123 @@
+package games.card.poker
+
+import pj.*
+
+rule "Royal flush"
+  when
+    Card(s: suit, rank == 13  )
+    Card(suit == s, rank == 12  )
+    Card(suit == s, rank == 11  )
+    Card(suit == s, rank == 10  )
+    Card(suit == s, rank == 1  )
+    cr : ClassificationResult(rank < 9)
+  then
+    cr.setRank(9);
+    cr.setHand("Royal flush");
+    update( cr );
+end
+
+rule "Straight flush"
+  when
+    Card(s: suit, r: rank)
+    Card(suit == s, rank == ( r - 1 ) )
+    Card(suit == s, rank == (r - 2 ))
+    Card(suit == s, rank == (r - 3) )
+    Card(suit == s,rank == (r - 4) )
+    cr : ClassificationResult(rank < 8)
+  then
+    cr.setRank(8);
+    cr.setHand("Straight flush");
+    update( cr );
+end
+
+rule "Straight"
+  when
+    Card(r: rank > 4  )
+    Card(rank == ( r - 1 ) )
+    Card(rank == (r - 2 ))
+    Card(rank == (r - 3) )
+    Card(( rank == (r - 4) || rank == (r -12) ))
+    cr : ClassificationResult(rank < 4)
+  then
+    cr.setRank( 4 );
+    cr.setHand( "Straight" );
+    update( cr );
+end
+
+rule "Flush"
+  when
+    Card( s: suit)
+    Card( suit == s )
+    Card( suit == s )
+    Card( suit == s )
+    Card( suit == s )
+    cr : ClassificationResult(rank < 5)
+  then
+    cr.setRank( 5 );
+    cr.setHand( "Flush" );
+    update( cr );
+end
+
+rule "Four of a kind"
+  when
+    Card( r: rank)
+    Card( rank == r )
+    Card( rank == r )
+    Card( rank == r )
+    cr : ClassificationResult(rank < 7)
+  then
+    cr.setRank( 7 );
+    cr.setHand( "Four of a kind" );
+    update( cr );
+end
+
+rule "Full house"
+  when
+    Card( r1: rank)
+    Card( r2: rank != r1 )
+    Card( rank == r1 )
+    Card( rank == r1 )
+    Card( rank == r2 )
+    cr : ClassificationResult(rank < 6)
+  then
+    cr.setRank( 6 );
+    cr.setHand( "Full house" );
+    update( cr );
+end
+
+rule "Three of a kind"
+  when
+    Card( r: rank)
+    Card( rank == r )
+    Card( rank == r )
+    cr : ClassificationResult(rank < 3)
+  then
+    cr.setRank( 3 );
+    cr.setHand( "Three of a kind" );
+    update( cr );
+end
+
+rule "Two pairs"
+  when
+    Card( r1: rank)
+    Card( r2: rank != r1 )
+    Card( rank == r1 )
+    Card( rank == r2 )
+    cr : ClassificationResult(rank < 2)
+  then
+    cr.setRank( 2 );
+    cr.setHand( "Two pairs" );
+    update( cr );
+end
+
+rule "One pair"
+  when
+    c1: Card( r: rank)
+    Card( rank == r )
+    cr : ClassificationResult(rank < 1)
+  then
+    cr.setRank( 1 );
+    c1.setRank( 5 );
+    cr.setHand( "One pair" );
+    update( cr );
+end
